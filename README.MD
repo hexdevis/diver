@@ -1,4 +1,4 @@
-# 🐬 Diver
+# 🐬 Diver V0.1
 Enhances your development workflow but also aligns with the principles of open-source and local-first computing, with a complete local inferance through CLI.
 
 ### Overview
@@ -89,3 +89,6 @@ Edit `config.py` to override these defaults. You can also set your shell `$EDITO
 - `model.py` — small wrapper around Ollama subprocess for LLM queries.
 - `config.py` — global settings (DEFAULTS) and lazy resource getters.
 
+## Future updates:
+V0.2 - Possiblity to commit changes in the source code through the editor, interactively, by acceting sections and what not.
+V0.3 - ...
