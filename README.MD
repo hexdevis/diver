@@ -24,7 +24,7 @@ conda env create -f env.yml
 conda activate diver
 ```
 
-3. (Optional) Install the package in editable mode so you can run the `diver` console script:
+3. Run Diver (not yet as a standalone package)
 
 ```bash
 # Run directly: 
