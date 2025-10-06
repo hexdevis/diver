@@ -1,7 +1,3 @@
-# ===============================================================
-# - Designed for use inside coding assistants, dev tools, etc.
-# ===============================================================
-
 import subprocess
 import json
 import time
@@ -53,7 +49,7 @@ Answer concisely and clearly.
         stdout, stderr = process.communicate(input=prompt, timeout=180)
 
         elapsed = round(time.time() - start_time, 2)
-        print(green(f"\n✅ Inference completed in {elapsed}s"))
+        print(green(f"✅ Inference completed in {elapsed}s"))
         print("🧩", stdout)
 
         # --- Error handling ---

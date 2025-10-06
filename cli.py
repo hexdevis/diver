@@ -42,7 +42,7 @@ async def main():
     print("Commands: :index | :find query | :edit file | :run file | :quit")
 
     while True:
-        q = await session.prompt_async("\n> ", key_bindings=bindings)
+        q = await session.prompt_async("> ", key_bindings=bindings)
 
         if q.startswith(":"):
             cmd_parts = q[1:].split(maxsplit=1)

@@ -1,5 +1,5 @@
 # 🐬 Diver V0.1
-Enhances your development workflow but also aligns with the principles of open-source and local-first computing, with a complete local inferance through CLI.
+Enhances your development workflow but also aligns with the principles of open-source and local-first computing.
 
 ### Overview
 
@@ -7,7 +7,7 @@ Diver is a lightweight local-first developer CLI that helps you search, edit, ru
 
 ## Quick start
 
-1. Install required OS packages on WSL (example):
+1. Install required packages:
 
 ```bash
 sudo apt update
@@ -27,11 +27,7 @@ conda activate diver
 3. (Optional) Install the package in editable mode so you can run the `diver` console script:
 
 ```bash
-# from the repository root
-pip install -e .
-# now you can run just:
-diver
-# or run directly without installing:
+# Run directly: 
 python3 diver.py
 ```
 
@@ -64,15 +60,20 @@ Any unknown `:<command>` is forwarded to your shell, so you can run `:ls`, `:pwd
 
 Settings are centralized in `config.py` under the `DEFAULTS` dict. Example keys you can change:
 
-- `python` — which python executable to use (default `python2`)
+- `python` — which python executable to use (default `python3`)
 - `node` — which node executable to use (default `node`)
 - `ts_node`, `npx`, `tsc` — TypeScript toolchain
 - `gcc`, `gpp`, `clang`, `clangpp` — C/C++ compilers
 - `rustc` — Rust compiler
 - `build_dir` — directory where compiled binaries are written (default `build`)
-- `editor` — default editor (used if $EDITOR is not set)
+- `editor` — default editor 
 
-Edit `config.py` to override these defaults. You can also set your shell `$EDITOR` environment variable before launching the CLI (e.g., `export EDITOR="code --wait"`).
+Additional (in `config.py`)
+
+- `CODE_DIR = "./src"` — the directory that Diver indexes and searches. By default Diver scans and chunks files under `./src`; change this to point at a different code root.
+- `MODEL_NAME = "BAAI/bge-m3"` — the sentence-transformers / embedding model identifier used to compute embeddings when indexing and querying (this is a Hugging Face-style model id used by `SentenceTransformer`). Swap this to another compatible embedding model if you prefer smaller/faster or higher-quality embeddings.
+- `OLLAMA_MODEL = "qwen3:8b"` — the local LLM model name that the CLI uses when invoking `ollama run` (the Ollama model tag). Change this to any model you have available locally via Ollama.
+- `TOP_K = 7` — number of search results to return from the vector DB (controls how many hits `:find` shows). Increase to see more candidates, or lower to show only the top matches.
 
 
 ## Notes & Troubleshooting
@@ -89,6 +90,8 @@ Edit `config.py` to override these defaults. You can also set your shell `$EDITO
 - `model.py` — small wrapper around Ollama subprocess for LLM queries.
 - `config.py` — global settings (DEFAULTS) and lazy resource getters.
 
-## Future updates:
-V0.2 - Possiblity to commit changes in the source code through the editor, interactively, by acceting sections and what not.
-V0.3 - ...
+----
+### Future updates:
+- V0.2 - Possiblity to commit changes in the source code through the CLI editor, interactively.
+- V0.3 - ...
+

@@ -7,7 +7,7 @@ from typing import Optional
 CODE_DIR = "./src"
 MODEL_NAME = "BAAI/bge-m3"
 OLLAMA_MODEL = "qwen3:8b"
-TOP_K = 5 
+TOP_K = 7 
 
 # Runtime and compiler configuration 
 DEFAULTS = {
