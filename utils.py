@@ -2,6 +2,26 @@
 
 import os, glob 
 
+# ANSI color helpers
+def _ansi(code: str) -> str:
+    return f"\x1B[{code}m"
+
+def color(text: str, code: str) -> str:
+    return f"{_ansi(code)}{text}{_ansi('0')}"
+
+def green(text: str) -> str:
+    return color(text, '32')
+
+def yellow(text: str) -> str:
+    return color(text, '33')
+
+def cyan(text: str) -> str:
+    return color(text, '36')
+
+def magenta(text: str) -> str:
+    return color(text, '35')
+
+
 def get_code_files(path, exts=(".py", ".js", ".cpp", ".java", ".ts")):
     files = []
     for ext in exts:

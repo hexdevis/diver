@@ -7,7 +7,23 @@ from typing import Optional
 CODE_DIR = "./src"
 MODEL_NAME = "BAAI/bge-m3"
 OLLAMA_MODEL = "qwen3:8b"
-TOP_K = 5
+TOP_K = 5 
+
+# Runtime and compiler configuration 
+DEFAULTS = {
+	"python": "python3",
+	"node": "node",
+	"ts_node": "ts-node",
+	"npx": "npx",
+	"tsc": "tsc",
+	"gcc": "gcc",
+	"gpp": "g++",
+	"clang": "clang",
+	"clangpp": "clang++",
+	"rustc": "rustc",
+	"build_dir": "build",
+	"editor": "vim",
+}
 
 # Lazily-initialized heavy resources to avoid long import-time delays.
 _embedder: Optional[SentenceTransformer] = None

@@ -1,28 +1,72 @@
-# Entry point: imports CLI and runs it
-
 import asyncio
 import subprocess
-import time
+import signal
+import sys
+import os
 from cli import main
 
+
 def start_ollama_server():
-    print("🚀 Starting Ollama Server...")
-    process = subprocess.Popen(
-        ["ollama", "serve", "qwen3:8b"],
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    )
-    time.sleep(5)  # Give Ollama a few seconds to boot
-    return process
+  print("Starting Server...")
+  process = subprocess.Popen(
+    ["ollama", "serve", "qwen3:8b"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    text=True,
+  )
+  return process
+
+
+def _cleanup_and_exit(server_process, code=0):
+  try:
+    print("\nExiting...", flush=True)
+    sys.stdout.flush()
+  except Exception:
+    pass
+  if server_process is not None:
+    try:
+      server_process.terminate()
+    except Exception:
+      pass
+    try:
+      print("Shutting Server...", flush=True)
+      sys.stdout.flush()
+    except Exception:
+      pass
+  # in signal handlers it's safer to call os._exit which bypasses cleanup handlers
+  try:
+    os._exit(code)
+  except Exception:
+    # fallback to sys.exit if os._exit fails
+    try:
+      sys.exit(code)
+    except SystemExit:
+      raise
+
 
 if __name__ == "__main__":
-        server_process = start_ollama_server()
-        try:
-          asyncio.run(main())
-        except KeyboardInterrupt:
-          print("\nExiting...")
-        finally:
-          server_process.terminate()
-          print("🛑 Shutting down Ollama Server...")
+  server_process = None
+  # Start server first so signals during startup are also handled
+  try:
+    server_process = start_ollama_server()
 
+    # Register signal handlers to ensure clean shutdown on SIGINT/SIGTERM
+    def _handler(signum, frame):
+      # call cleanup and force exit
+      _cleanup_and_exit(server_process, 0)
+
+    signal.signal(signal.SIGINT, _handler)
+    signal.signal(signal.SIGTERM, _handler)
+
+    try:
+      asyncio.run(main())
+    except (KeyboardInterrupt, EOFError):
+      _cleanup_and_exit(server_process, 0)
+  except Exception:
+    # Unexpected errors should still clean up the server process
+    if server_process is not None:
+      try:
+        server_process.terminate()
+      except Exception:
+        pass
+    raise
