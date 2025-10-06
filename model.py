@@ -15,6 +15,8 @@ def ask_model(query: str, context: str, model: str = "qwen3:8b") -> str:
     Returns:
         str: The model's response text or an error message.
     """
+    if not query.strip():
+        return print("No input, skipping inference")
 
     # system + user prompt 
     prompt = f"""

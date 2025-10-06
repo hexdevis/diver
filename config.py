@@ -7,7 +7,7 @@ MODEL_NAME = "BAAI/bge-m3"
 OLLAMA_MODEL = "qwen3:8b"
 TOP_K = 7 
 
-# Runtime and compiler configuration 
+# runtime and compiler configuration 
 DEFAULTS = {
 	"python": "python3",
 	"node": "node",
@@ -23,7 +23,7 @@ DEFAULTS = {
 	"editor": "vim",
 }
 
-# Lazily-initialized heavy resources to avoid long import-time delays.
+# lazily-initialized heavy resources to avoid long import-time delays.
 _embedder: Optional[SentenceTransformer] = None
 _chroma_client = None
 _collection = None
