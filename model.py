@@ -16,7 +16,7 @@ def ask_model(query: str, context: str, model: str = "qwen3:8b") -> str:
         str: The model's response text or an error message.
     """
 
-    # --- Construct system + user prompt ---
+    # system + user prompt 
     prompt = f"""
 You are a coding assistant with access to project context.
 
@@ -31,12 +31,10 @@ Answer concisely and clearly.
 
     start_time = time.time()
 
-    # Print a colored 'thinking' status
     print(cyan("\n🧠 Thinking..."))
 
     try:
-        # --- Spawn the subprocess for Ollama inference ---
-        # This runs locally: `ollama run <model>`
+        # spawn the subprocess for ollama infer. 
         process = subprocess.Popen(
             ["ollama", "run", model],
             stdin=subprocess.PIPE,
@@ -45,14 +43,14 @@ Answer concisely and clearly.
             text=True
         )
 
-        # --- Send prompt to model and wait for output ---
+        # send prompt to model 
         stdout, stderr = process.communicate(input=prompt, timeout=180)
 
         elapsed = round(time.time() - start_time, 2)
         print(green(f"✅ Inference completed in {elapsed}s"))
         print("🧩", stdout)
 
-        # --- Error handling ---
+        # model error handling 
         if process.returncode != 0:
             print("⚠️ Model process exited with error code:", process.returncode)
             if stderr:
@@ -62,12 +60,11 @@ Answer concisely and clearly.
         if not stdout.strip():
             return "⚠️ Model returned no output."
 
-        # --- Optionally: Try to parse structured JSON output ---
-        # If your model returns structured data, you can parse it here.
+        # parse structured json output
         try:
             return json.loads(stdout)
         except json.JSONDecodeError:
-            # Not JSON — just return plain text
+            # return plain text
             return stdout.strip()
 
     except subprocess.TimeoutExpired:

@@ -28,7 +28,8 @@ def index_codebase(batch_size: int = 32):
     embedder = get_embedder()
     collection = get_collection()
 
-    chunks = []  # list of tuples (chunk_text, source, id)
+    # list of tuples (chunk_text, source, id)
+    chunks = []      
     for fp in files:
         content = read_file(fp)
         for chunk in chunk_text(content):

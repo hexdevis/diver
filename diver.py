@@ -46,11 +46,11 @@ def _cleanup_and_exit(server_process, code=0):
 
 if __name__ == "__main__":
   server_process = None
-  # Start server first so signals during startup are also handled
+  # start server first so signals during startup are also handled
   try:
     server_process = start_ollama_server()
 
-    # Register signal handlers to ensure clean shutdown on SIGINT/SIGTERM
+    # capture signal handlers to ensure clean shutdown on SIGINT/SIGTERM
     def _handler(signum, frame):
       # call cleanup and force exit
       _cleanup_and_exit(server_process, 0)
@@ -63,7 +63,7 @@ if __name__ == "__main__":
     except (KeyboardInterrupt, EOFError):
       _cleanup_and_exit(server_process, 0)
   except Exception:
-    # Unexpected errors should still clean up the server process
+    # cleanup on unexpected errors
     if server_process is not None:
       try:
         server_process.terminate()

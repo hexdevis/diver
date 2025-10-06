@@ -8,8 +8,8 @@ from model import ask_model
 from utils import read_file, green, yellow, cyan, magenta
 
 async def main():
-    # Lazily get the collection to avoid heavy imports at module import time.
-    # Dynamically import search_code to avoid static import resolution issues
+    # get the collection to avoid heavy imports at module import time.
+    # import search_code to avoid static import resolution issues
     try:
         import importlib
 
@@ -29,13 +29,11 @@ async def main():
 
     @bindings.add("c-c")
     def _(event):
-        # Exit the prompt and re-raise KeyboardInterrupt in the main coroutine so
-        # the top-level process-level handler can run (prints 'Exiting...' and cleans up).
+        # exit the prompt and re-raise KeyboardInterrupt in main
         event.app.exit(exception=KeyboardInterrupt())
 
     @bindings.add("c-d")
     def _eof(event):
-        # Map Ctrl+D to EOFError and let the main handler handle clean shutdown.
         event.app.exit(exception=EOFError())
 
     print("\n🐬 Diver CLI")
@@ -56,14 +54,13 @@ async def main():
                 index_codebase()
 
             elif cmd == "cd":
-                # Change current working directory for the CLI process.
                 import os
 
                 target = cmd_parts[1] if len(cmd_parts) > 1 else None
                 if not target:
                     target = os.path.expanduser("~")
                 try:
-                    # Expand ~ and environment variables
+                    # expand env. variables
                     path = os.path.expanduser(os.path.expandvars(target))
                     os.chdir(path)
                     print(f"Changed directory to {os.getcwd()}")
@@ -71,7 +68,7 @@ async def main():
                     print(f"cd: {e}")
 
             elif cmd == "run":
-                # Run/compile files for multiple languages. If no path provided, prompt for it.
+                # run/compile files for multiple languages; if no path provided, prompt for it.
                 path = cmd_parts[1] if len(cmd_parts) > 1 else None
                 if not path:
                     path = await session.prompt_async("File to run: ")
@@ -99,20 +96,18 @@ async def main():
                             return False
                         return True
 
-                    # Helper to compile to a binary and run it
+                    # compile to a binary and run it
                     def compile_and_run(compiler, args, bin_path):
                         import os
                         build_dir = DEFAULTS.get("build_dir") or "build"
                         os.makedirs(build_dir, exist_ok=True)
 
-                        # Ensure binary path is inside build_dir to avoid name collisions
+                        # ensure binary path is inside build_dir to avoid name collisions
                         base = os.path.basename(bin_path)
                         full_bin_path = os.path.join(build_dir, base)
 
-                        # Replace the output arg (if present) with the full path
-                        # Assume args contains source and maybe '-o' and bin
                         cmd = [compiler] + args
-                        # If args contains '-o' followed by filename, replace that
+                        # if args contains '-o' followed by filename, replace that
                         if "-o" in cmd:
                             o_idx = cmd.index("-o")
                             if o_idx + 1 < len(cmd):
@@ -128,12 +123,12 @@ async def main():
                             print(f"Compilation failed with code: {e.returncode}")
                             return
 
-                        # Run the produced binary. Use absolute path in build_dir.
+                        # run the produced binary. Use absolute path in build_dir.
                         run_cmd([full_bin_path])
 
-                    # Dispatch by extension
+                    # dispatch by extension
                     if ext == ".py":
-                        # Python script
+                        # py script
                         py_exec = shutil.which(DEFAULTS.get("python")) or shutil.which("python")
                         if not py_exec:
                             print("Python interpreter not found")
@@ -148,7 +143,7 @@ async def main():
                         run_cmd([node, path])
 
                     elif ext == ".ts":
-                        # Prefer npx ts-node, fall back to tsc+node
+                        # prefer npx ts-node, fall back to tsc+node
                         npx = shutil.which(DEFAULTS.get("npx"))
                         ts_node = shutil.which(DEFAULTS.get("ts_node"))
                         if npx:
@@ -178,7 +173,7 @@ async def main():
                             run_cmd([node, compiled])
 
                     elif ext == ".rs":
-                        # Rust: rustc file -o bin
+                        # rustc file -o bin
                         rustc = shutil.which(DEFAULTS.get("rustc"))
                         if not rustc:
                             print("rustc not found; install Rust toolchain")
@@ -210,10 +205,8 @@ async def main():
                 run_in_terminal(_compile_and_run)
 
 
-
             elif cmd == "edit":
-                # Edit a file using the user's $EDITOR (defaults to vim).
-                # If no path provided, prompt for it.
+                # if no path provided, prompt for it.
                 path = cmd_parts[1] if len(cmd_parts) > 1 else None
                 if not path:
                     path = await session.prompt_async("File to edit: ")
@@ -228,12 +221,12 @@ async def main():
 
                     editor = os.environ.get("EDITOR", "vim")
 
-                    # Create a temp file with the same suffix as the target
+                    # make a temp file with the same suffix as the target
                     suffix = os.path.splitext(path)[1] or None
                     tf = tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=suffix)
                     tmpname = tf.name
                     try:
-                        # Write current contents if file exists
+                        # write current contents if file exists
                         try:
                             with open(path, "r", encoding="utf-8") as f:
                                 tf.write(f.read())
@@ -244,7 +237,7 @@ async def main():
                         finally:
                             tf.close()
 
-                        # Launch editor (this blocks until editor exits)
+                        # launch editor (this blocks until editor exits)
                         try:
                             subprocess.check_call([editor, tmpname])
                         except subprocess.CalledProcessError as e:
@@ -254,7 +247,7 @@ async def main():
                             print(f"Editor not found: {editor}")
                             return
 
-                        # Read temp file and write back to target path
+                        # read temp file and write back to target path
                         with open(tmpname, "r", encoding="utf-8") as tf_read:
                             new = tf_read.read()
 
@@ -278,10 +271,10 @@ async def main():
 
             elif cmd == "find" and len(cmd_parts) > 1:
                 raw = cmd_parts[1]
-                # Support optional --ext flag: e.g. --ext .py or --ext py
+                # support optional --ext flag: --ext .py or --ext py
                 parts = raw.split()
                 ext = None
-                # Support explicit flag --ext
+                # support explicit flag --ext
                 if "--ext" in parts:
                     i = parts.index("--ext")
                     if i + 1 < len(parts):
@@ -289,7 +282,7 @@ async def main():
                         # remove ext flag and value from parts
                         del parts[i:i+2]
 
-                # Also support implicit extension token anywhere: rs, py, cpp, c, js, ts, java
+                # support implicit extension token anywhere: rs, py, cpp, c, js, ts, java
                 known = {"rs", ".rs", "py", ".py", "cpp", ".cpp", "cc", ".cc", "c", ".c", "js", ".js", "ts", ".ts", "java", ".java"}
                 remaining = []
                 for tok in parts:
@@ -321,7 +314,7 @@ async def main():
                     print("" + "-"*40)
 
             else:
-                # Unknown command: try running it as a shell command.
+                # unk command: try running it as a shell command.
                 shell_cmd = q[1:].strip()
                 if not shell_cmd:
                     print(f"Unknown command: {cmd}")
@@ -333,7 +326,7 @@ async def main():
 
                     shell = os.environ.get("SHELL", "/bin/sh")
                     try:
-                        # Use the user's shell to execute the command string
+                        # use the user shell to execute the cmd string
                         subprocess.check_call(shell_cmd, shell=True, executable=shell)
                     except subprocess.CalledProcessError as e:
                         print(f"Command exited with code: {e.returncode}")
@@ -344,7 +337,7 @@ async def main():
 
         else:
             matches = search_code(q)
-            # Build context using available snippets; support (src, snippet, dist)
+            # build context using available snippets 
             snippets = []
             for res in matches:
                 try:

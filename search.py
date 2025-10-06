@@ -1,10 +1,7 @@
-# Search logic (search_code)
-
 from config import TOP_K, get_embedder, get_collection, CODE_DIR
 from utils import get_code_files, read_file
 import re
 import os
-
 
 def _snippet_for_query(doc: str, query: str, window: int = 120, max_len: int = 400) -> str:
     """Return a short snippet from doc centered on the first occurrence of query (case-insensitive).
@@ -34,7 +31,7 @@ def _parse_code_query(query: str):
     name is the identifier following the keyword.
     """
     q = query.strip()
-    # Patterns like 'struct Node' or 'class Foo' or 'def bar'
+    # patterns like 'struct Node' or 'class Foo' or 'def bar'
     m = re.search(r"\b(struct|class)\s+(\w+)\b", q)
     if m:
         return m.group(1), m.group(2)
@@ -78,7 +75,7 @@ def _search_files_for_symbol(kind: str, name: str, ext: str = None):
 
     ext may be like '.cpp' or 'cpp' or None.
     """
-    # Normalize extension filter
+    # normalize extension filter
     exts = None
     if ext:
         if not ext.startswith('.'):
@@ -107,7 +104,7 @@ def _search_files_for_symbol(kind: str, name: str, ext: str = None):
                 continue
 
         if kind == "def":
-            # Python-style def
+            # python-style def
             pat = re.compile(rf"^\s*def\s+{re.escape(name)}\s*\(", re.M)
             m = pat.search(content)
             if m:
@@ -144,7 +141,7 @@ def search_code(query: str, ext: str = None):
     if not query:
         return []
 
-    # Allow queries like 'in .cpp struct Node' or 'in cpp struct Node'
+    # allow queries like 'in .cpp struct Node' or 'in cpp struct Node'
     q = query.strip()
     # strip leading 'in' tokens
     if q.lower().startswith("in "):
@@ -158,7 +155,7 @@ def search_code(query: str, ext: str = None):
         if fs_matches:
             return [(p, s, None) for p, s in fs_matches]
 
-    # Fallback to embedding-based similarity search
+    # fallback to embedding-based similarity search
     embedder = get_embedder()
     collection = get_collection()
 
@@ -187,7 +184,7 @@ def search_code(query: str, ext: str = None):
         snippet = _snippet_for_query(d, query)
         out.append((src, snippet, dist))
 
-    # If an extension filter is provided, only return results with matching source paths.
+    # if extension filter is provided, only return results with matching source paths.
     if ext:
         if not ext.startswith('.'):
             ext = '.' + ext

@@ -1,8 +1,7 @@
 # File I/O helpers (get_code_files, read_file, write_file, chunk_text)
-
 import os, glob 
 
-# ANSI color helpers
+# ANSI color codes
 def _ansi(code: str) -> str:
     return f"\x1B[{code}m"
 

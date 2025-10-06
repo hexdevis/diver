@@ -1,5 +1,3 @@
-# Store constants like model names, paths, settings
-
 import chromadb
 from sentence_transformers import SentenceTransformer
 from typing import Optional
