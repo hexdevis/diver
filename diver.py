@@ -33,11 +33,9 @@ def _cleanup_and_exit(server_process, code=0):
       sys.stdout.flush()
     except Exception:
       pass
-  # in signal handlers it's safer to call os._exit which bypasses cleanup handlers
   try:
     os._exit(code)
   except Exception:
-    # fallback to sys.exit if os._exit fails
     try:
       sys.exit(code)
     except SystemExit:
@@ -50,7 +48,7 @@ if __name__ == "__main__":
   try:
     server_process = start_ollama_server()
 
-    # capture signal handlers to ensure clean shutdown on SIGINT/SIGTERM
+    # capture signal handlers to ensure clean shutdown
     def _handler(signum, frame):
       # call cleanup and force exit
       _cleanup_and_exit(server_process, 0)

@@ -1,7 +1,7 @@
 import subprocess
 import json
 import time
-from utils import cyan, green
+from utils import cyan, green, grey, blue
 
 def ask_model(query: str, context: str, model: str = "qwen3:8b") -> str:
     """
@@ -16,9 +16,9 @@ def ask_model(query: str, context: str, model: str = "qwen3:8b") -> str:
         str: The model's response text or an error message.
     """
     if not query.strip():
-        return print("No input, skipping inference")
+        return print("no_query")
 
-    # system + user prompt 
+    # system + user prompt
     prompt = f"""
 You are a coding assistant with access to project context.
 
@@ -30,13 +30,11 @@ Relevant code context:
 
 Answer concisely and clearly.
 """
-
     start_time = time.time()
 
-    print(cyan("\n🧠 Thinking..."))
-
+    print(grey("\n🧩 Running inference..."))
     try:
-        # spawn the subprocess for ollama infer. 
+        # spawn the subprocess for ollama infer
         process = subprocess.Popen(
             ["ollama", "run", model],
             stdin=subprocess.PIPE,
@@ -45,14 +43,13 @@ Answer concisely and clearly.
             text=True
         )
 
-        # send prompt to model 
+        # send prompt to model
         stdout, stderr = process.communicate(input=prompt, timeout=180)
-
         elapsed = round(time.time() - start_time, 2)
-        print(green(f"✅ Inference completed in {elapsed}s"))
-        print("🧩", stdout)
+        print("🧠", stdout)
+        print(grey((f"({elapsed}s)\n")))
 
-        # model error handling 
+        # model error handling
         if process.returncode != 0:
             print("⚠️ Model process exited with error code:", process.returncode)
             if stderr:
@@ -75,5 +72,3 @@ Answer concisely and clearly.
         return "❌ Ollama not found. Make sure it's installed and running (`ollama serve`)."
     except Exception as e:
         return f"❌ Unexpected error during inference: {e}"
-
-

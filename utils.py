@@ -1,5 +1,5 @@
 # File I/O helpers (get_code_files, read_file, write_file, chunk_text)
-import os, glob 
+import os, glob
 
 # ANSI color codes
 def _ansi(code: str) -> str:
@@ -19,6 +19,12 @@ def cyan(text: str) -> str:
 
 def magenta(text: str) -> str:
     return color(text, '35')
+
+def grey(text: str) -> str:
+    return color(text, '37')
+
+def blue(text: str) -> str:
+    return color(text, '34')
 
 
 def get_code_files(path, exts=(".py", ".js", ".cpp", ".java", ".ts")):
@@ -43,4 +49,3 @@ def chunk_text(text, size=512):
     lines = text.splitlines()
     for i in range(0, len(lines), size):
         yield "\n".join(lines[i:i+size])
-

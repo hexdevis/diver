@@ -5,7 +5,7 @@ from prompt_toolkit.application import run_in_terminal
 from indexer import index_codebase
 from config import get_collection, DEFAULTS
 from model import ask_model
-from utils import read_file, green, yellow, cyan, magenta
+from utils import read_file, green, yellow, cyan, magenta, blue
 
 async def main():
     # get the collection to avoid heavy imports at module import time.
@@ -337,7 +337,7 @@ async def main():
 
         else:
             matches = search_code(q)
-            # build context using available snippets 
+            # build context using available snippets
             snippets = []
             for res in matches:
                 try:
@@ -351,4 +351,3 @@ async def main():
 
             context = "\n\n".join(snippets)
             answer = await asyncio.to_thread(ask_model, q, context)
-
